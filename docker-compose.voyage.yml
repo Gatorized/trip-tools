@@ -1,0 +1,157 @@
+# Voyage — private deployment on this host, built from this fork's source.
+#
+# Separate from upstream's own deploy/docker-compose.production.yml (which
+# uses network_mode: host and a single-container image pulled from a
+# registry) so future rebases from cassandra/trip-tools don't conflict with
+# this file. Built locally from the repo's own Dockerfile instead.
+#
+# Architecture note: the app image bundles gunicorn + an internal nginx
+# (listening on 8000) via supervisord — see Dockerfile/package/. We map
+# that port to the host instead of using network_mode: host, and let the
+# host's own nginx (already terminating TLS for voyage.ddnds.com) reverse
+# proxy to it, same pattern as the other services on this host.
+#
+# Media storage: production settings (src/tt/settings/production.py) hard-
+# require S3-compatible object storage — there's no local-filesystem
+# fallback in that settings module. tt_minio below is a self-hosted
+# S3-compatible bucket for this, so no external cloud account is needed.
+#
+# Usage (from repo root):
+#   docker compose -f docker-compose.voyage.yml --env-file .env.voyage up -d --build
+
+networks:
+  voyage-tt:
+
+services:
+  tt_redis:
+    image: redis:7.4-alpine
+    container_name: tt_redis
+    networks:
+      - voyage-tt
+    volumes:
+      - tt_redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  tt_db:
+    image: mysql:8.0
+    container_name: tt_db
+    networks:
+      - voyage-tt
+    volumes:
+      - tt_db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD must be set in .env.voyage}
+      MYSQL_DATABASE: ${TT_DB_NAME:-trip_tools}
+      MYSQL_USER: ${TT_DB_USER:-tt}
+      MYSQL_PASSWORD: ${TT_DB_PASSWORD:?TT_DB_PASSWORD must be set in .env.voyage}
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+      timeout: 10s
+
+  tt-minio:
+    image: minio/minio:latest
+    container_name: tt-minio
+    command: server /data --console-address ":9001"
+    networks:
+      - voyage-tt
+    volumes:
+      - tt_minio_data:/data
+    environment:
+      MINIO_ROOT_USER: ${TT_STORAGE_ACCESS_KEY_ID:?TT_STORAGE_ACCESS_KEY_ID must be set in .env.voyage}
+      MINIO_ROOT_PASSWORD: ${TT_STORAGE_SECRET_ACCESS_KEY:?TT_STORAGE_SECRET_ACCESS_KEY must be set in .env.voyage}
+    ports:
+      # Bound to localhost only — the host's nginx proxies /media/ here for
+      # public GET access; the app talks to MinIO over the docker network.
+      - "127.0.0.1:9000:9000"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 10s
+      retries: 10
+      start_period: 15s
+      timeout: 10s
+
+  tt_minio_init:
+    image: minio/mc:latest
+    container_name: tt_minio_init
+    networks:
+      - voyage-tt
+    depends_on:
+      tt-minio:
+        condition: service_healthy
+    environment:
+      TT_STORAGE_BUCKET_NAME: ${TT_STORAGE_BUCKET_NAME:-voyage-media}
+      TT_STORAGE_ACCESS_KEY_ID: ${TT_STORAGE_ACCESS_KEY_ID}
+      TT_STORAGE_SECRET_ACCESS_KEY: ${TT_STORAGE_SECRET_ACCESS_KEY}
+    entrypoint: >
+      /bin/sh -c "
+        mc alias set local http://tt-minio:9000 \"$$TT_STORAGE_ACCESS_KEY_ID\" \"$$TT_STORAGE_SECRET_ACCESS_KEY\" &&
+        mc mb --ignore-existing local/$$TT_STORAGE_BUCKET_NAME &&
+        mc anonymous set download local/$$TT_STORAGE_BUCKET_NAME
+      "
+    restart: "no"
+
+  tt_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: voyage-tt:latest
+    container_name: tt_app
+    networks:
+      - voyage-tt
+    volumes:
+      - tt_media:/data/media
+    ports:
+      - "127.0.0.1:${VOYAGE_TT_PORT:-3011}:8000"
+    restart: unless-stopped
+    environment:
+      DJANGO_SETTINGS_MODULE: tt.settings.production
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?DJANGO_SECRET_KEY must be set in .env.voyage}
+      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL:?DJANGO_SUPERUSER_EMAIL must be set in .env.voyage}
+      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD:?DJANGO_SUPERUSER_PASSWORD must be set in .env.voyage}
+      TT_ADMIN_UUID: ${TT_ADMIN_UUID:?TT_ADMIN_UUID must be set in .env.voyage}
+      SITE_NAME: ${SITE_NAME:-Voyage}
+      TT_EXTRA_HOST_URLS: ${TT_EXTRA_HOST_URLS:-https://voyage.ddnds.com}
+      TT_DB_HOST: tt_db
+      TT_DB_PORT: 3306
+      TT_DB_NAME: ${TT_DB_NAME:-trip_tools}
+      TT_DB_USER: ${TT_DB_USER:-tt}
+      TT_DB_PASSWORD: ${TT_DB_PASSWORD:?TT_DB_PASSWORD must be set in .env.voyage}
+      TT_REDIS_HOST: tt_redis
+      TT_REDIS_PORT: 6379
+      TT_STORAGE_ENDPOINT_URL: http://tt-minio:9000
+      TT_STORAGE_REGION_NAME: us-east-1
+      TT_STORAGE_BUCKET_NAME: ${TT_STORAGE_BUCKET_NAME:-voyage-media}
+      TT_STORAGE_ACCESS_KEY_ID: ${TT_STORAGE_ACCESS_KEY_ID}
+      TT_STORAGE_SECRET_ACCESS_KEY: ${TT_STORAGE_SECRET_ACCESS_KEY}
+      TT_STORAGE_CUSTOM_DOMAIN: voyage.ddnds.com/media
+      TT_DEFAULT_FROM_EMAIL: ${TT_DEFAULT_FROM_EMAIL}
+      TT_SERVER_EMAIL: ${TT_SERVER_EMAIL}
+      TT_EMAIL_HOST: ${TT_EMAIL_HOST}
+      TT_EMAIL_PORT: ${TT_EMAIL_PORT:-587}
+      TT_EMAIL_HOST_USER: ${TT_EMAIL_HOST_USER}
+      TT_EMAIL_HOST_PASSWORD: ${TT_EMAIL_HOST_PASSWORD}
+      TT_EMAIL_USE_TLS: ${TT_EMAIL_USE_TLS:-true}
+    depends_on:
+      tt_db:
+        condition: service_healthy
+      tt_redis:
+        condition: service_healthy
+      tt_minio_init:
+        condition: service_completed_successfully
+
+volumes:
+  tt_db_data:
+  tt_redis_data:
+  tt_minio_data:
+  tt_media:
