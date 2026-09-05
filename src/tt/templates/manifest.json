@@ -1,13 +1,13 @@
 {% load static %}{
-  "name": "Trip Tools",
-  "short_name": "TT",
+  "name": "Voyage",
+  "short_name": "Voyage",
   "description": "Tools for research, planning, tracking and journaling for trips.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "landscape",
-  "theme_color": "#177072",
-  "background_color": "#177072",
+  "theme_color": "#1775fc",
+  "background_color": "#1775fc",
   "icons": [
     {
       "src": "{% static 'img/tt-icon-16x16.png' %}",
