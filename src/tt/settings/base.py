@@ -372,17 +372,12 @@ AUTH_USER_MODEL = "custom.CustomUser"
 # ====================
 # Transactional Emails
 
-EMAIL_BACKEND = 'anymail.backends.resend.EmailBackend'
-
 EMAIL_API_KEY = ENV.EMAIL_API_KEY
-ANYMAIL = {
-    'RESEND_API_KEY': EMAIL_API_KEY,
-}
 
 EMAIL_SUBJECT_PREFIX = "%s " % ENV.EMAIL_SUBJECT_PREFIX
 DEFAULT_FROM_EMAIL = ENV.DEFAULT_FROM_EMAIL
 SERVER_EMAIL = ENV.SERVER_EMAIL
-FROM_EMAIL_NAME = "Trip Tools"
+FROM_EMAIL_NAME = "Voyage"
 
 # Normal Settings
 EMAIL_HOST = ENV.EMAIL_HOST
@@ -390,13 +385,26 @@ try:
     EMAIL_PORT = ENV.EMAIL_PORT
 except (TypeError, ValueError):
     EMAIL_PORT = 587
-    
+
 EMAIL_HOST_USER = ENV.EMAIL_HOST_USER
 EMAIL_HOST_PASSWORD = ENV.EMAIL_HOST_PASSWORD
 EMAIL_TIMEOUT = 10  # In seconds
 
 EMAIL_USE_TLS = ENV.EMAIL_USE_TLS
 EMAIL_USE_SSL = ENV.EMAIL_USE_SSL
+
+# is_email_configured() (tt.apps.notify.email_sender.EmailSender) documents
+# EMAIL_API_KEY (Anymail/Resend) and EMAIL_HOST+EMAIL_HOST_USER (SMTP) as
+# equally valid — but EMAIL_BACKEND was hardcoded to the Anymail backend
+# unconditionally, so the SMTP path was configurable yet never actually
+# used. Branch on whichever is actually populated.
+if EMAIL_API_KEY:
+    EMAIL_BACKEND = 'anymail.backends.resend.EmailBackend'
+    ANYMAIL = {
+        'RESEND_API_KEY': EMAIL_API_KEY,
+    }
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     
 # Needed when sending emails in background tasks since HttpRequest not
 # available. Override this for development/testing/staging.

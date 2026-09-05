@@ -53,7 +53,14 @@ class SigninManager( Singleton ):
             message_html_template_name = self.SIGNIN_MESSAGE_HTML_TEMPLATE_NAME,
             to_email_address = to_email_address,
             template_context = email_template_context,
-            non_blocking = True,
+            # Sending non-blocking (a raw threading.Thread started mid-request)
+            # reliably drops the SMTP connection under the gthread worker here
+            # (SMTPServerDisconnected: timed out) even though the exact same
+            # send succeeds synchronously or from a thread outside request
+            # handling. Signin is low-frequency and the send takes ~1s, so
+            # blocking is the safe fix rather than chasing the gthread/thread
+            # interaction further.
+            non_blocking = False,
         )
 
         email_sender = EmailSender( data = email_sender_data )
