@@ -1,0 +1,29 @@
+{% extends "modals/action_2_with_cancel.html" %}
+
+{% block modal_dialog_id %}itinerary-item-delete-modal{% endblock %}
+{% block title_text %}Delete Itinerary Item{% endblock %}
+
+{% block preamble %}
+<form method="post" action="{% url 'itinerary_item_delete' trip_uuid=trip.uuid item_id=item.id %}" data-async="modal">
+  {% csrf_token %}
+{% endblock %}
+
+{% block body %}
+<div class="alert alert-warning">
+  <strong>Are you sure you want to delete this itinerary item?</strong>
+</div>
+<p>
+  This will permanently delete <strong>{{ item.title }}</strong>.
+</p>
+<p class="text-muted">
+  This action cannot be undone.
+</p>
+{% endblock %}
+
+{% block action_right %}
+<button type="submit" class="btn btn-danger">Delete Item</button>
+{% endblock %}
+
+{% block postamble %}
+</form>
+{% endblock %}

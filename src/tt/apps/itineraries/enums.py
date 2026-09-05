@@ -7,7 +7,7 @@ class ItineraryItemType( LabeledEnum ):
     RAIL         = ( 'Rail', '' )
     BUS          = ( 'Bus/Shuttle', '' )
     BOAT         = ( 'Boat', '' )
-    CAR          = ( 'Boat', '' )
+    CAR          = ( 'Car', '' )
     CAR_RENTAL   = ( 'Car rental', '' )
     CAR_SERVICE  = ( 'Car service', '' )
     LODGING      = ( 'Lodging', '' )

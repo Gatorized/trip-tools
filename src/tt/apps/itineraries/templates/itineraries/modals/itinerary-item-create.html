@@ -1,0 +1,22 @@
+{% extends "modals/action_2_with_cancel.html" %}
+
+{% block modal_dialog_id %}itinerary-item-create-modal{% endblock %}
+
+{% block title_text %}Add Itinerary Item{% endblock %}
+
+{% block preamble %}
+<form method="post" action="{% url 'itinerary_item_create' trip_uuid=trip.uuid %}" data-async="modal">
+  {% csrf_token %}
+{% endblock %}
+
+{% block body %}
+  {% include "itineraries/components/itinerary-item-form.html" %}
+{% endblock %}
+
+{% block action_right %}
+<button type="submit" class="btn btn-primary">ADD ITEM</button>
+{% endblock %}
+
+{% block postamble %}
+</form>
+{% endblock %}
