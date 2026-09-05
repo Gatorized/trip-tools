@@ -8,7 +8,7 @@
    data-async="modal"
    class="btn btn-primary">
   {% icon "plus" size="sm" css_class="tt-icon-left" %}
-  Add Item
+  Ajouter un élément
 </a>
 {% endif %}
 {% endblock %}
@@ -16,7 +16,7 @@
 {% block subpage_content %}
 <div class="m-3">
   <div class="mb-3">
-    <p class="text-muted mb-0">Your trip, day by day.</p>
+    <p class="text-muted mb-0">Votre voyage, jour par jour.</p>
   </div>
 
   {% if items %}
@@ -28,9 +28,9 @@
           <span class="badge badge-secondary mr-2">{{ item.item_type.label }}</span>
           <span class="font-weight-bold">{{ item.title }}</span>
           <div class="text-muted small mt-1">
-            {{ item.start_datetime|date:"D, M j, Y g:i A" }}
+            {{ item.start_datetime|date:"d/m/Y à H:i" }}
             {% if item.end_datetime %}
-            &ndash; {{ item.end_datetime|date:"D, M j, Y g:i A" }}
+            &ndash; {{ item.end_datetime|date:"d/m/Y à H:i" }}
             {% endif %}
           </div>
           {% if item.description %}
@@ -45,13 +45,13 @@
           <a href="{% url 'itinerary_item_edit' trip_uuid=trip_page.trip.uuid item_id=item.id %}"
              data-async="modal"
              class="text-muted mr-2"
-             title="Edit item">
+             title="Modifier l'élément">
             {% icon "edit" size="sm" %}
           </a>
           <a href="{% url 'itinerary_item_delete' trip_uuid=trip_page.trip.uuid item_id=item.id %}"
              data-async="modal"
              class="text-muted"
-             title="Delete item">
+             title="Supprimer l'élément">
             {% icon "trash" size="sm" %}
           </a>
         </div>
@@ -62,13 +62,13 @@
   </div>
   {% else %}
   <div class="text-center text-muted py-5">
-    <p>No itinerary items yet.</p>
+    <p>Aucun élément d'itinéraire pour l'instant.</p>
     {% if trip_page.request_member.can_edit_trip %}
     <a href="{% url 'itinerary_item_create' trip_uuid=trip_page.trip.uuid %}"
        data-async="modal"
        class="btn btn-primary">
       {% icon "plus" size="sm" css_class="tt-icon-left" %}
-      Add your first item
+      Ajouter votre premier élément
     </a>
     {% endif %}
   </div>

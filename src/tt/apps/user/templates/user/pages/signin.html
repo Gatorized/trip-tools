@@ -6,15 +6,15 @@
   <div class="card-header bg-primary text-dark">
     <div class="d-flex align-items-center">
       {% icon "unlock" size="md" css_class="mr-2" %}
-      <h4 class="mb-0">Sign In</h4>
+      <h4 class="mb-0">Connexion</h4>
     </div>
   </div>
   <div class="card-body">
     {% if email_not_configured %}
     <div class="alert alert-danger">
-      <div class="h4" >Email Not Configured</div>
+      <div class="h4" >Courriel non configuré</div>
       <p>
-        The email settings are is not properly configured.  The Sign In feature requires emails to work.
+        Les paramètres de courriel ne sont pas configurés correctement. La connexion nécessite l'envoi de courriels.
       </p>
     </div>
     {% endif %}
@@ -28,36 +28,36 @@
       <div class="d-flex align-items-center">
         {% icon "plug" size="md" css_class="mr-2" %}
         <div>
-          <strong>Browser Extension Authorization</strong>
-          <p class="mb-0 small">Sign in to connect your browser extension to Trip Tools.</p>
+          <strong>Autorisation de l'extension de navigateur</strong>
+          <p class="mb-0 small">Connectez-vous pour lier votre extension de navigateur à Voyage.</p>
         </div>
       </div>
     </div>
     {% endif %}
-    <form class="sigin form" method="post" 
+    <form class="sigin form" method="post"
           action="{% url 'user_signin' %}"
           data-synchronous="true">
       {% csrf_token %}
-      <div class="h3 text-center">Sign In</div>
+      <div class="h3 text-center">Connexion</div>
       <div class="mt-3 text-center">
         <input class="" style="width: 20rem;"
                type="email"
                name="email"
                value=""
                autofocus="autofocus"
-               placeholder="e-mail address" required="" id="hi-signin-email"/>
+               placeholder="adresse courriel" required="" id="hi-signin-email"/>
       </div>
       <div class="text-center">
         <button id="hi-signin-button"
                 role="button" type="submit"
                 class="btn btn-lg btn-primary my-4">
-          <b>Sign In</b>
+          <b>Connexion</b>
         </button>
       </div>
     </form>
 
     <div class="card-footer">
-      <p class="text-center small text-muted font-italic">Currently in early access (invite only)</p>
+      <p class="text-center small text-muted font-italic">Accès privé</p>
     </div>
   </div>
 </div>

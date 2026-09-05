@@ -21,10 +21,10 @@ class TripPermissionLevel( LabeledEnum ):
     """
     Permission levels for trip sharing.
     """
-    OWNER   = ( 'Owner', 'Full control including deletion and sharing' , 4 )
-    ADMIN   = ( 'Admin', 'Can edit and manage most aspects'            , 3 )
-    EDITOR  = ( 'Editor', 'Can edit trip content'                      , 2 )
-    VIEWER  = ( 'Viewer', 'Can view trip content'                      , 1 )
+    OWNER   = ( 'Propriétaire', 'Contrôle total, incluant la suppression et le partage' , 4 )
+    ADMIN   = ( 'Admin', 'Peut modifier et gérer la plupart des aspects'                , 3 )
+    EDITOR  = ( 'Éditeur', 'Peut modifier le contenu du voyage'                         , 2 )
+    VIEWER  = ( 'Lecteur', 'Peut consulter le contenu du voyage'                        , 1 )
 
     def __init__( self, label, description, priority ):
         super().__init__( label, description )
@@ -77,6 +77,6 @@ class TripPermissionLevel( LabeledEnum ):
     
 class TripStatus( LabeledEnum ):
 
-    UPCOMING  = ( 'Upcoming', '' )
-    CURRENT   = ( 'Current', '' )
-    PAST      = ( 'Past', '' )
+    UPCOMING  = ( 'À venir', '' )
+    CURRENT   = ( 'En cours', '' )
+    PAST      = ( 'Passé', '' )

@@ -153,13 +153,13 @@ class SigninMagicCodeView( View ):
         magic_code_status = magic_code_generator.check_magic_code( request, magic_code = magic_code )
 
         if magic_code_status == MagicCodeStatus.INVALID:
-            error_message = 'Invalid access code.'
+            error_message = 'Code d\'accès invalide.'
         elif magic_code_status == MagicCodeStatus.EXPIRED:
-            error_message = 'Access code has expired.'
+            error_message = 'Le code d\'accès a expiré.'
         elif magic_code_status == MagicCodeStatus.VALID:
             error_message = None
         else:
-            error_message = 'Access code generated an unexpected error.'
+            error_message = 'Le code d\'accès a généré une erreur inattendue.'
 
         logger.debug( f'Signin Magic: Email={email_address}, Code={magic_code}, Status={magic_code_status}' )
 

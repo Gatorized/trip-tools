@@ -8,8 +8,8 @@ class SigninErrorType( LabeledEnum ):
     Error types that can be displayed on the signin page.
     """
     INVITATION_EXPIRED = (
-        'Invitation Link Expired',
-        'This invitation link has expired or has already been used. You have been added to the trip - just sign in below to access it.',
+        'Lien d\'invitation expiré',
+        'Ce lien d\'invitation a expiré ou a déjà été utilisé. Vous avez été ajouté au voyage — connectez-vous simplement ci-dessous pour y accéder.',
     )
 
 

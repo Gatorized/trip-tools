@@ -21,7 +21,7 @@ class ItineraryItemForm( forms.ModelForm ):
             }),
             'title': forms.TextInput( attrs = {
                 'class': 'form-control',
-                'placeholder': 'e.g., Drive to Wotton',
+                'placeholder': 'ex. : Route vers Wotton',
                 'autofocus': 'autofocus',
             }),
             'start_datetime': forms.DateTimeInput( attrs = {
@@ -34,12 +34,12 @@ class ItineraryItemForm( forms.ModelForm ):
             }),
             'description': forms.Textarea( attrs = {
                 'class': 'form-control',
-                'placeholder': 'e.g., 32 Rang 16 EST, Wotton (Québec) J0A 1N0',
+                'placeholder': 'ex. : 32 Rang 16 EST, Wotton (Québec) J0A 1N0',
                 'rows': 2,
             }),
             'notes': forms.Textarea( attrs = {
                 'class': 'form-control',
-                'placeholder': 'Optional notes',
+                'placeholder': 'Notes facultatives',
                 'rows': 2,
             }),
         }

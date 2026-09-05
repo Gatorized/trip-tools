@@ -3,7 +3,7 @@
 
 {% block modal_dialog_id %}itinerary-item-edit-modal{% endblock %}
 
-{% block title_text %}Edit Itinerary Item{% endblock %}
+{% block title_text %}Modifier l'élément d'itinéraire{% endblock %}
 
 {% block preamble %}
 <form method="post" action="{% url 'itinerary_item_edit' trip_uuid=trip.uuid item_id=item.id %}" data-async="modal">
@@ -17,7 +17,7 @@
 {% block action_right %}
 <button type="submit" class="btn btn-primary">
   {% icon "save" size="sm" css_class="tt-icon-left" %}
-  UPDATE
+  METTRE À JOUR
 </button>
 {% endblock %}
 

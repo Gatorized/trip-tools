@@ -15,12 +15,12 @@ class TripForm( forms.ModelForm ):
         widgets = {
             'title': forms.TextInput( attrs = {
                 'class': 'form-control',
-                'placeholder': 'Enter trip title',
+                'placeholder': 'Entrez le titre du voyage',
                 'autofocus': 'autofocus',
             }),
             'description': forms.Textarea( attrs = {
                 'class': 'form-control',
-                'placeholder': 'Enter optional description',
+                'placeholder': 'Entrez une description facultative',
                 'rows': 3,
             }),
         }

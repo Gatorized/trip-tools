@@ -1,6 +1,6 @@
 {% load icons %}
 
-<div class="h3">Trip Journal</div>
+<div class="h3">Journal de voyage</div>
 
 {% if journal_section.journal_exists %}
 
@@ -10,7 +10,7 @@
     {% if journal_section.publishing_status.has_published_version %}
     <div class="text-center mt-1">
       <a href="{{ journal_section.published_url }}" target="_blank" class="btn btn-primary">
-        {% icon "eye" size="lg" %} PUBLISHED
+        {% icon "eye" size="lg" %} PUBLIÉ
       </a>
     </div>
     {% endif %}
@@ -18,7 +18,7 @@
     {% if journal_section.can_edit %}
     <div class="text-center mt-1">
       <a href="{% url 'journal_home' journal_uuid=journal_section.journal.uuid %}" class="btn btn-secondary">
-        {% icon "edit" size="lg" %} EDIT
+        {% icon "edit" size="lg" %} MODIFIER
       </a>
     </div>
     {% endif %}
@@ -26,7 +26,7 @@
     {% if journal_section.publishing_status.is_unpublished or journal_section.publishing_status.has_unpublished_changes %}
     <div class="text-center mt-1">
       <a href="{{ journal_section.draft_url }}" target="_blank" class="btn btn-muted">
-        {% icon "eye" size="lg" %} DRAFT
+        {% icon "eye" size="lg" %} BROUILLON
       </a>
     </div>
         {% endif %}
@@ -45,14 +45,14 @@
   <div class="d-flex align-items-start">
     <div class="mr-2">{% icon "info-circle" %}</div>
     <div>
-      <h5 class="alert-heading mb-2">No Journal</h5>
-      <p class="mb-0">A journal has not yet been created for this trip.</p>
+      <h5 class="alert-heading mb-2">Aucun journal</h5>
+      <p class="mb-0">Aucun journal n'a encore été créé pour ce voyage.</p>
     </div>
   </div>
   {% if journal_section.can_edit %}
   <div class="mt-3">
     <a href="{% url 'journal_create' trip_uuid=trip.uuid %}" class="btn btn-primary">
-      {% icon "edit" size="lg" %} CREATE JOURNAL
+      {% icon "edit" size="lg" %} CRÉER LE JOURNAL
     </a>
   </div>
   {% endif %}

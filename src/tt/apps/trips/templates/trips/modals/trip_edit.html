@@ -3,7 +3,7 @@
 
 {% block modal_dialog_id %}trip-edit-modal{% endblock %}
 
-{% block title_text %}Edit Trip{% endblock %}
+{% block title_text %}Modifier le voyage{% endblock %}
 
 {% block preamble %}
 <form method="post" action="{% url 'trips_trip_edit' trip_uuid=trip.uuid %}" data-async="modal">
@@ -17,7 +17,7 @@
 {% block action_right %}
 <button type="submit" class="btn btn-primary">
   {% icon "save" size="sm" css_class="tt-icon-left" %}
-  UPDATE
+  METTRE À JOUR
 </button>
 {% endblock %}
 
